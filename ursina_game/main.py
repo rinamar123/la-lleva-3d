@@ -75,8 +75,10 @@ def show_welcome():
     invoke(show_menu, delay=3.5)
 
 def show_menu():
-    destroy(welcome_root)
-    welcome_root.enabled = False
+    # Destruir la bienvenida una sola vez. No cambiar enabled después de
+    # destroy(): Panda3D ya no tiene un NodePath válido para ese Entity.
+    if welcome_root and welcome_root.enabled:
+        destroy(welcome_root)
     menu_root.enabled = True
     state["screen"] = "menu"
     clear_ui()
