@@ -22,6 +22,7 @@ except ImportError as exc:  # pragma: no cover - depende del entorno gráfico
         "Después ejecuta: python -m juego_lleva.ursina3d"
     ) from exc
 
+from juego_lleva.core.config import Config
 from juego_lleva.red.simulacion import SimulacionRonda
 from juego_lleva.desktop3d_logic import (
     ANCHO_LOGICO, ALTO_LOGICO, ESCALA_MUNDO,
@@ -230,6 +231,15 @@ class LaLlevaUrsina:
         self._actualizar_controles_menu()
 
     def _crear_simulacion(self):
+        # La escena 3D y desktop3d_logic usan un campo de 1280x720. La
+        # simulación original usa por defecto 1908x1080 en escritorio; si no
+        # alineamos Config antes de crear los modelos, los límites y obstáculos
+        # quedan fuera del terreno visible. Se ajusta antes de instanciar
+        # jugadores, entorno y servicios para que todos compartan las mismas
+        # dimensiones durante esta partida 3D.
+        Config.ANCHO_PANTALLA = ANCHO_LOGICO
+        Config.ALTO_PANTALLA = ALTO_LOGICO
+
         nombres = {0: "Jugador"}
         nombres.update({i: f"IA {i}" for i in range(1, self.cantidad_ia + 1)})
         self.sim = SimulacionRonda(nombres, duracion_ronda=self.duracion_ronda)
