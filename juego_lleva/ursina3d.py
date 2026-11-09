@@ -358,6 +358,14 @@ class LaLlevaUrsina:
         camera.rotation = (self.pitch, self.yaw, 0)
 
     def _sincronizar_camara(self):
+        # Al iniciar, orientar la cámara hacia el centro del parque. El jugador
+        # aparece desplazado del centro; mirar en yaw=0 lo deja mirando paralelo
+        # al campo y puede dar la impresión de que la escena está vacía.
+        jugador = self.sim.obtener_jugador(0)
+        wx, wz = _mundo(jugador.x + self.sim.config.TAMAÑO_JUGADOR / 2,
+                        jugador.y + self.sim.config.TAMAÑO_JUGADOR / 2)
+        self.yaw = math.degrees(math.atan2(-wx, -wz))
+        self.pitch = 12.0
         self._actualizar_camara()
 
     def _actualizar_powerups(self):
