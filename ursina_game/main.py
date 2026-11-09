@@ -242,5 +242,7 @@ def input(key):
         elif state["screen"] in ("menu","setup"):
             application.quit()
 
-show_welcome()
+# Iniciar directamente en el menú mientras se estabiliza la secuencia de bienvenida.
+# Así evitamos depender de una llamada programada antes del primer ciclo de Ursina.
+show_menu()
 app.run()
