@@ -109,9 +109,13 @@ class LaLlevaUrsina:
             Entity(model="cube", position=(0, 0.006, z), scale=(12.8, 0.01, 0.012),
                    color=color.rgba(205, 225, 190, 35))
 
-        camera.fov = 88
-        camera.position = (0, ALTURA_OJOS, 0)
-        camera.rotation = (0, 0, 0)
+        # En el menú mostramos el parque desde arriba. Si la cámara inicia
+        # a la altura de los ojos y mirando al horizonte, el terreno queda
+        # debajo del campo visual y parece que la ventana está vacía.
+        # Al comenzar la partida, _sincronizar_camara() cambia a primera persona.
+        camera.fov = 70
+        camera.position = (0, 12, 0)
+        camera.rotation = (90, 0, 0)
 
     def _crear_interfaz(self):
         self.titulo = Text(
