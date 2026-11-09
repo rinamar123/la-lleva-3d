@@ -108,9 +108,12 @@ def show_setup(mode):
         diff.text=state["difficulty"].upper()
     button("CAMBIAR DIFICULTAD", -.22, cycle, scale=1)
     if mode == "online":
-        label("Multijugador por código estará disponible al conectar", -.34, .72, col=color.orange)
-    button("COMENZAR PARTIDA", -.45, start_game)
-    button("VOLVER", -.56, show_menu, scale=1)
+        label("El modo online con códigos privados aún requiere", -.34, .72, col=color.orange)
+        label("la nueva API de salas en Render. No inicia una falsa partida.", -.40, .62, col=color.orange)
+        button("VOLVER", -.52, show_menu, scale=1)
+    else:
+        button("COMENZAR PARTIDA", -.45, start_game)
+        button("VOLVER", -.56, show_menu, scale=1)
 
 def make_tree(x,z):
     trunk=Entity(model="cylinder", color=color.rgb(112,72,42), scale=(.65,3,.65), position=(x,1.5,z), collider="box")
@@ -173,6 +176,9 @@ def back_to_menu():
     if player:
         destroy(player)
     for b in bot_entities: destroy(b["entity"])
+    for e in world_entities:
+        destroy(e)
+    world_entities.clear()
     for e in list(scene.entities):
         if e is not camera and e not in [menu_root,welcome_root]:
             pass
