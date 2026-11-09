@@ -44,6 +44,9 @@ class LaLlevaUrsina:
         self.yaw = 0.0
         self.pitch = 0.0
         self.ultima_lleva = None
+        self.cantidad_ia = 3
+        self.dificultad = "normal"
+        self.duración_ronda = 180
         self.entidades_jugadores = {}
         self.entidades_obstaculos = []
         self.entidades_powerups = {}
@@ -69,6 +72,23 @@ class LaLlevaUrsina:
             texture="white_cube", texture_scale=(13, 8),
             color=color.rgb(54, 112, 74), collider="box",
         )
+        # Detalles de parque alrededor de la zona de juego: senderos, árboles
+        # bajos, jardineras y bancas. Se mantienen fuera del área central.
+        Entity(model="cube", position=(0, -0.025, 0), scale=(1.15, 0.025, 7.7),
+               color=color.rgb(190, 174, 132))
+        Entity(model="cube", position=(0, -0.02, 0), scale=(12.8, 0.025, 0.75),
+               color=color.rgb(190, 174, 132))
+        for tx, tz in [(-5.7, -3.2), (-5.7, 3.2), (5.7, -3.2), (5.7, 3.2)]:
+            Entity(model="cylinder", position=(tx, 0.55, tz), scale=(0.28, 1.1, 0.28),
+                   color=color.rgb(105, 69, 42), collider="box")
+            Entity(model="sphere", position=(tx, 1.55, tz), scale=(1.25, 1.45, 1.25),
+                   color=color.rgb(42, 130, 58))
+        for bx, bz in [(-3.6, 2.9), (3.6, -2.9)]:
+            Entity(model="cube", position=(bx, 0.42, bz), scale=(1.15, 0.12, 0.38),
+                   color=color.rgb(135, 78, 42))
+            for leg in (-0.42, 0.42):
+                Entity(model="cube", position=(bx + leg, 0.2, bz), scale=(0.09, 0.42, 0.1),
+                       color=color.rgb(70, 55, 42))
         # Límites físicos y visuales del campo.
         pared_color = color.rgb(46, 64, 76)
         for x in (-6.5, 6.5):
@@ -122,10 +142,56 @@ class LaLlevaUrsina:
             scale=0.75, color=color.white,
         )
         self.minimapa_activo = False
-        self.boton_inicio = Button(
-            text="COMENZAR", scale=(0.24, 0.075), position=(0, -0.02),
-            color=color.azure, on_click=self._accion_inicio,
+        self.panel_menu = Entity(
+            parent=camera.ui, model="quad", position=(0, 0.02, 0.12),
+            scale=(0.72, 0.72), color=color.rgba(8, 20, 32, 238),
         )
+        self.titulo_menu = Text(
+            "CONFIGURA TU PARTIDA", parent=self.panel_menu,
+            position=(0, 0.38), origin=(0, 0), scale=1.15,
+            color=color.rgb(255, 220, 120),
+        )
+        self.etiqueta_ia = Text(
+            "Rivales controlados por IA", parent=self.panel_menu,
+            position=(0, 0.20), origin=(0, 0), scale=0.85,
+            color=color.white,
+        )
+        self.valor_ia = Text(
+            str(self.cantidad_ia), parent=self.panel_menu,
+            position=(0, 0.04), origin=(0, 0), scale=1.35,
+            color=color.rgb(255, 230, 130),
+        )
+        self.boton_ia_menos = Button(
+            text="−", parent=self.panel_menu, scale=(0.16, 0.11),
+            position=(-0.23, 0.04), color=color.rgb(20, 95, 150),
+            highlight_color=color.rgb(35, 135, 195),
+            on_click=lambda: self._cambiar_ia(-1),
+        )
+        self.boton_ia_mas = Button(
+            text="+", parent=self.panel_menu, scale=(0.16, 0.11),
+            position=(0.23, 0.04), color=color.rgb(20, 95, 150),
+            highlight_color=color.rgb(35, 135, 195),
+            on_click=lambda: self._cambiar_ia(1),
+        )
+        self.etiqueta_dificultad = Text(
+            "Dificultad", parent=self.panel_menu, position=(0, -0.12),
+            origin=(0, 0), scale=0.8, color=color.white,
+        )
+        self.boton_dificultad = Button(
+            text=self.dificultad.upper(), parent=self.panel_menu,
+            scale=(0.38, 0.09), position=(0, -0.23),
+            color=color.rgb(20, 95, 150),
+            highlight_color=color.rgb(35, 135, 195),
+            on_click=self._cambiar_dificultad,
+        )
+        self.boton_inicio = Button(
+            text="COMENZAR PARTIDA", parent=self.panel_menu,
+            scale=(0.48, 0.105), position=(0, -0.39),
+            color=color.rgb(20, 125, 75),
+            highlight_color=color.rgb(35, 165, 100),
+            on_click=self._accion_inicio,
+        )
+        self.panel_menu.enabled = True
         self.boton_reiniciar = Button(
             text="JUGAR OTRA VEZ", scale=(0.25, 0.075), position=(0, -0.13),
             color=color.azure, on_click=self.reiniciar,
@@ -142,16 +208,37 @@ class LaLlevaUrsina:
         self.boton_reiniciar.enabled = False
         self.resultado.enabled = False
         self.panel_mapa.enabled = False
-        self.estado.text = "Esquiva al rival o persíguelo si tienes la lleva."
+        self.panel_menu.enabled = True
+        self._actualizar_controles_menu()
+        self.estado.text = "Elige cuántas IA quieres y pulsa COMENZAR."
+
+    def _actualizar_controles_menu(self):
+        self.valor_ia.text = str(self.cantidad_ia)
+        self.boton_dificultad.text = self.dificultad.upper()
+
+    def _cambiar_ia(self, delta):
+        self.cantidad_ia = max(1, min(8, self.cantidad_ia + delta))
+        self._actualizar_controles_menu()
+
+    def _cambiar_dificultad(self):
+        opciones = ("facil", "normal", "dificil")
+        self.dificultad = opciones[(opciones.index(self.dificultad) + 1) % len(opciones)]
+        self._actualizar_controles_menu()
 
     def _crear_simulacion(self):
-        self.sim = SimulacionRonda({0: "Jugador", 1: "Rival IA"}, duracion_ronda=60)
-        # Se conserva la simulación y la lógica de colisiones de la rama online.
+        nombres = {0: "Jugador"}
+        nombres.update({i: f"IA {i}" for i in range(1, self.cantidad_ia + 1)})
+        self.sim = SimulacionRonda(nombres, duracion_ronda=self.duracion_ronda)
         from juego_lleva.models.jugador_ia import JugadorIA
-        x, y = self.sim.jugadores[1].x, self.sim.jugadores[1].y
-        ia = JugadorIA(x, y, 1, "Rival IA")
-        self.sim.jugadores[1] = ia
-        ia.jugadores = self.sim.jugadores
+        for indice in range(1, self.cantidad_ia + 1):
+            original = self.sim.obtener_jugador(indice)
+            ia = JugadorIA(original.x, original.y, indice, f"IA {indice}")
+            self.sim.jugadores[indice] = ia
+        for jugador in self.sim.jugadores:
+            if isinstance(jugador, JugadorIA):
+                jugador.jugadores = self.sim.jugadores
+                jugador.tiempo_reaccion = {"facil": 0.55, "normal": 0.28, "dificil": 0.12}[self.dificultad]
+                jugador.velocidad_ia *= {"facil": 0.78, "normal": 1.0, "dificil": 1.18}[self.dificultad]
         self._construir_jugadores()
         self._construir_obstaculos()
 
@@ -173,6 +260,8 @@ class LaLlevaUrsina:
         self.boton_inicio.enabled = False
         self.boton_reiniciar.enabled = False
         self.resultado.enabled = False
+        self.panel_menu.enabled = False
+        self.panel_menu.enabled = False
         self.panel_mapa.enabled = True
         self.cruz.enabled = True
         mouse.locked = True
