@@ -1,1 +1,2 @@
+-r requirements.txt
 ursina>=7.0.0
