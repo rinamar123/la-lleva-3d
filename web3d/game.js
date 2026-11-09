@@ -89,7 +89,22 @@ function drawMinimap(){const w=minimap.width,h=minimap.height;mapCtx.clearRect(0
 }
 function hud(){if(!snapshot)return;timerLabel.textContent=String(Math.max(0,Math.ceil((snapshot.duracion_ronda||60)-(snapshot.tiempo_ronda||0)))).padStart(2,"0");const holder=(snapshot.jugadores||[]).find(p=>p.es_lleva);tagLabel.textContent=holder?holder.nombre:"—";tagLabel.style.color=holder&&Number(holder.id)===myId?"#66d8ff":"#ffbd74";}
 function showToast(msg){toast.textContent=msg;toast.classList.add("show");toastTimer=2;}
-async function api(path,data){const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});const j=await r.json();if(!r.ok||j.error)throw new Error(j.error||`HTTP ${r.status}`);return j;}
+async function api(path,data){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),10000);
+  try{
+    const r=await fetch(path,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data),signal:controller.signal,cache:"no-store"});
+    const raw=await r.text();
+    let j;
+    try{j=raw?JSON.parse(raw):{};}catch{throw new Error(`Respuesta no válida del servidor (HTTP ${r.status})`);}
+    if(!r.ok||j.error)throw new Error(j.error||`HTTP ${r.status}`);
+    return j;
+  }catch(e){
+    if(e.name==="AbortError")throw new Error("El servidor tardó demasiado en responder. Intenta de nuevo.");
+    if(e instanceof TypeError)throw new Error("No se pudo conectar con el servidor. Revisa tu conexión.");
+    throw e;
+  }finally{clearTimeout(timeout);}
+}
 async function joinRoom(){const name=(nameInput.value||"").trim().slice(0,12)||"Jugador";myName=name;statusLabel.textContent="Conectando…";try{const r=await api("/api/sala/unirse",{nombre:name,color:colorInput.value,accesorio:accessoryInput.value});token=r.token;myId=Number(r.id);joined=true;nameInput.disabled=true;colorInput.disabled=true;accessoryInput.disabled=true;statusLabel.textContent=`Conectado como ${r.nombre} · ${r.jugadores_online}/${r.max_jugadores}`;overlayTitle.textContent="SALA MULTIJUGADOR";overlayCopy.textContent="Comparte la dirección de esta página con otro jugador. Cuando haya al menos 2 conectados, ambos deben pulsar LISTO.";startButton.textContent="LISTO PARA JUGAR";showToast(`Entraste como ${r.nombre}`);await sync(false);}catch(e){statusLabel.textContent=`No se pudo conectar: ${e.message}`;}}
 async function sync(ready=false){if(!token)return false;if(syncBusy){if(ready)readyPending=true;return false;}syncBusy=true;const forward=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw)),right=new THREE.Vector3(Math.cos(yaw),0,-Math.sin(yaw));const dir=new THREE.Vector3();if(keys.has("w")||keys.has("arrowup"))dir.add(forward);if(keys.has("s")||keys.has("arrowdown"))dir.sub(forward);if(keys.has("d")||keys.has("arrowright"))dir.add(right);if(keys.has("a")||keys.has("arrowleft"))dir.sub(right);const input={arriba:dir.z<-.15,abajo:dir.z>.15,izquierda:dir.x<-.15,derecha:dir.x>.15};try{snapshot=await api("/api/sala/sync",{token,entrada:input,listo:ready?true:undefined});syncWorld(snapshot);hud();drawMinimap();statusLabel.textContent=`En sala: ${snapshot.jugadores_online}/${snapshot.max_jugadores} · ${snapshot.fase}`;phaseUI(snapshot);return true;}catch(e){statusLabel.textContent=`Conexión interrumpida: ${e.message}`;if(e.message.includes("token")){token=null;joined=false;readySent=false;nameInput.disabled=false;colorInput.disabled=false;accessoryInput.disabled=false;startButton.textContent="VOLVER A ENTRAR";overlay.classList.remove("hidden");overlayTitle.textContent="SE PERDIÓ LA CONEXIÓN";overlayCopy.textContent="Tu sesión de sala expiró. Pulsa el botón para volver a entrar.";gameStarted=false;crosshair.style.display="none";}return false;}finally{syncBusy=false;if(readyPending){readyPending=false;sync(true).then(ok=>{if(ok)showToast("Marcaste que estás listo");});}}
 }
