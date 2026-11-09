@@ -32,17 +32,19 @@ def clear_ui():
         destroy(e)
     ui.clear()
 
-def label(text, y, scale=1.3, parent=menu_root, col=color.white):
-    e = Text(text=text, parent=parent, y=y, z=-.5, origin=(0, 0), scale=scale, color=col)
+def label(text, y, scale=1.3, parent=menu_root, col=color.rgb(20, 45, 65)):
+    # Texto oscuro por defecto: legible incluso si Windows/Panda3D deja el fondo claro.
+    e = Text(text=text, parent=parent, y=y, z=-.01, origin=(0, 0), scale=scale, color=col)
     ui.append(e)
     return e
 
 def button(text, y, action, parent=menu_root, scale=1.2):
-    e = Button(text=text, parent=parent, y=y, z=-.5, scale=(.48, .085),
-               color=color.rgb(20, 115, 135), highlight_color=color.rgb(35, 165, 175),
-               pressed_color=color.rgb(70, 190, 220), text_color=color.white)
+    e = Button(text=text, parent=parent, y=y, z=0, scale=(.62, .095),
+               color=color.rgb(0, 105, 190), highlight_color=color.rgb(0, 145, 220),
+               pressed_color=color.rgb(0, 75, 145))
     e.text_entity.scale = 1.15
     e.text_entity.color = color.white
+    e.text_entity.z = -0.02
     e.on_click = action
     ui.append(e)
     return e
@@ -89,8 +91,8 @@ def show_menu():
     # El fondo se pinta con window.color: evitamos quads que puedan tapar
     # los textos o los botones en la interfaz 2D.
     window.color = color.rgb(18, 55, 78)
-    label("LA LLEVA 3D", .38, 2.5, col=color.rgb(80, 190, 255))
-    label("¡Corre, escapa y atrapa!", .27, 1.1, col=color.yellow)
+    label("LA LLEVA 3D", .38, 2.5, col=color.rgb(0, 75, 145))
+    label("¡Corre, escapa y atrapa!", .27, 1.1, col=color.rgb(180, 95, 0))
     button("JUGAR CONTRA LA IA", .10, lambda: show_setup("solo"))
     button("JUGAR CON AMIGOS", -.01, lambda: show_setup("online"))
     button("SALIR", -.25, application.quit)
