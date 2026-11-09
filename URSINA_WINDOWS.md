@@ -24,7 +24,7 @@ El comando anterior inicia el cliente 3D mantenido, que reutiliza la simulación
 ## Funciones disponibles en el cliente Ursina
 
 - Cámara en primera persona.
-- Min minimapa con jugadores y obstáculos.
+- Minimapa con jugadores y obstáculos.
 - Configuración de 1 a 8 rivales IA.
 - Dificultad fácil, normal y difícil.
 - Rondas de 180 segundos.
