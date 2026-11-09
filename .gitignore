@@ -1,0 +1,86 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+AUDITORIA.md
+
+# OS-specific
+.DS_Store
+Thumbs.db
+# Logs de compilacion web
+web/build.log
+web/servidor.log
+web/tunel.log
+web/*.log
+
+# Datos locales del juego (preferencias y ranking)
+juego_lleva/assets/settings.json
+juego_lleva/assets/ranking.json
+
+# Runtime de la version web (se descarga con web/descargar_runtime.py)
+web/cdn/
+
+# Dependencias locales opcionales para herramientas web
+node_modules/

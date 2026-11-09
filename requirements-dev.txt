@@ -1,0 +1,5 @@
+-r requirements.txt
+
+# Versión web (WebAssembly) y verificación con navegador headless
+pygbag>=0.9.3
+playwright>=1.40

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101d2b">
+  <meta name="description" content="La Lleva 3D: juego tradicional colombiano en primera persona.">
+  <title>La Lleva 3D</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="./game.js"></script>
+</head>
+<body>
+  <main id="game-shell">
+    <div id="game-container" aria-label="Escenario 3D de La Lleva"></div>
+
+    <header class="hud">
+      <div class="brand">LA LLEVA <span>3D</span><small id="connection-status">Sin conexión</small></div>
+      <div class="stats">
+        <div><small>TIEMPO</small><strong id="timer">60</strong></div>
+        <div><small>TIENE LA LLEVA</small><strong id="tag-status">Preparado</strong></div>
+      </div>
+    </header>
+
+    <aside id="minimap-wrap" aria-label="Minimapa">
+      <div class="map-title">MINIMAPA</div>
+      <canvas id="minimap" width="240" height="150"></canvas>
+      <div class="map-legend"><i class="dot you"></i> Tú <i class="dot rival"></i> Oponentes <i class="dot tag"></i> La lleva</div>
+    </aside>
+
+    <div id="crosshair" aria-hidden="true">+</div>
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <section id="overlay" class="overlay">
+      <div class="panel">
+        <p class="eyebrow">JUEGO TRADICIONAL COLOMBIANO</p>
+        <h1 id="overlay-title">LA LLEVA</h1>
+        <p id="overlay-copy">Escribe tu nombre y entra a la sala multijugador.</p>
+        <label class="name-label" for="player-name">Tu nombre</label>
+        <input id="player-name" maxlength="12" autocomplete="nickname" placeholder="Ej. Ana" value="Jugador">
+        <label class="name-label" for="player-color">Color de tu ropa</label>
+        <select id="player-color" class="cosmetic-select">
+          <option value="azul">Azul</option><option value="rojo">Rojo</option><option value="verde">Verde</option>
+          <option value="morado">Morado</option><option value="amarillo">Amarillo</option><option value="rosa">Rosa</option>
+          <option value="negro">Negro</option><option value="blanco">Blanco</option>
+        </select>
+        <label class="name-label" for="player-accessory">Accesorio</label>
+        <select id="player-accessory" class="cosmetic-select">
+          <option value="ninguno">Sin accesorio</option><option value="gorra">Gorra</option>
+          <option value="gafas">Gafas</option><option value="mochila">Mochila</option>
+        </select>
+        <p class="fine-print">Los demás jugadores también verán el color y accesorio que elegiste.</p>
+        <ul class="instructions">
+          <li><b>W A S D</b> — moverte</li>
+          <li><b>Mouse</b> — mirar alrededor desde tu perspectiva</li>
+          <li><b>ESC</b> — pausar / liberar el mouse</li>
+          <li>Evita las cajas y aprovecha los potenciadores.</li>
+        </ul>
+        <button id="start-button" type="button">COMENZAR PARTIDA</button>
+        <p class="fine-print">Multijugador: comparte la dirección del juego. Cada jugador tendrá su cámara y minimapa individuales. Se necesitan al menos 2 jugadores.</p>
+      </div>
+    </section>
+
+    <footer class="help">WASD para moverte · Mouse para mirar · ESC para pausar</footer>
+  </main>
+</body>
+</html>
