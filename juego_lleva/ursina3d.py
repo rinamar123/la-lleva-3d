@@ -140,7 +140,7 @@ class LaLlevaUrsina:
             scale=(0.94, 0.91), color=color.rgb(32, 105, 58),
         )
         self.mapa_titulo = Text(
-            "MINIMAPA", parent=self.panel_mapa, position=(-0.42, 0.39),
+            "MINIMAPA", parent=self.panel_mapa, position=(-0.42, 0.39, -0.03),
             scale=0.75, color=color.rgb(255, 230, 130), background=True,
         )
         self.minimapa_activo = False
@@ -150,17 +150,17 @@ class LaLlevaUrsina:
         )
         self.titulo_menu = Text(
             "CONFIGURA TU PARTIDA", parent=self.panel_menu,
-            position=(0, 0.38), origin=(0, 0), scale=1.15,
+            position=(0, 0.38, -0.02), origin=(0, 0), scale=1.15,
             color=color.rgb(255, 225, 95), background=True,
         )
         self.etiqueta_ia = Text(
             "Rivales controlados por IA", parent=self.panel_menu,
-            position=(0, 0.20), origin=(0, 0), scale=0.85,
+            position=(0, 0.20, -0.02), origin=(0, 0), scale=0.85,
             color=color.rgb(245, 248, 255), background=True,
         )
         self.valor_ia = Text(
             str(self.cantidad_ia), parent=self.panel_menu,
-            position=(0, 0.04), origin=(0, 0), scale=1.35,
+            position=(0, 0.04, -0.02), origin=(0, 0), scale=1.35,
             color=color.rgb(255, 235, 100), background=True,
         )
         self.boton_ia_menos = Button(
@@ -176,7 +176,7 @@ class LaLlevaUrsina:
             on_click=lambda: self._cambiar_ia(1),
         )
         self.etiqueta_dificultad = Text(
-            "Dificultad", parent=self.panel_menu, position=(0, -0.12),
+            "Dificultad", parent=self.panel_menu, position=(0, -0.12, -0.02),
             origin=(0, 0), scale=0.8, color=color.white, background=True,
         )
         self.boton_dificultad = Button(
