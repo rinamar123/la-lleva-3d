@@ -145,7 +145,7 @@ class LaLlevaUrsina:
         )
         self.minimapa_activo = False
         self.panel_menu = Entity(
-            parent=camera.ui, model="quad", position=(0, 0.02, 0.12),
+            parent=camera.ui, model="quad", position=(0, 0.02, -0.1),
             scale=(0.78, 0.78), color=color.rgba(7, 16, 29, 250),
         )
         self.titulo_menu = Text(
