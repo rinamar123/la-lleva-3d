@@ -46,7 +46,7 @@ class LaLlevaUrsina:
         self.ultima_lleva = None
         self.cantidad_ia = 3
         self.dificultad = "normal"
-        self.duración_ronda = 180
+        self.duracion_ronda = 180
         self.entidades_jugadores = {}
         self.entidades_obstaculos = []
         self.entidades_powerups = {}
@@ -209,6 +209,8 @@ class LaLlevaUrsina:
         self.resultado.enabled = False
         self.panel_mapa.enabled = False
         self.panel_menu.enabled = True
+        self.titulo_menu.text = "CONFIGURA TU PARTIDA"
+        self.boton_inicio.text = "COMENZAR PARTIDA"
         self._actualizar_controles_menu()
         self.estado.text = "Elige cuántas IA quieres y pulsa COMENZAR."
 
@@ -246,6 +248,7 @@ class LaLlevaUrsina:
         if self.sim is not None and not self.terminado:
             self.activo = True
             self.boton_inicio.enabled = False
+            self.panel_menu.enabled = False
             self.panel_mapa.enabled = True
             self.cruz.enabled = True
             mouse.locked = True
@@ -260,7 +263,6 @@ class LaLlevaUrsina:
         self.boton_inicio.enabled = False
         self.boton_reiniciar.enabled = False
         self.resultado.enabled = False
-        self.panel_menu.enabled = False
         self.panel_menu.enabled = False
         self.panel_mapa.enabled = True
         self.cruz.enabled = True
@@ -453,9 +455,11 @@ class LaLlevaUrsina:
             mouse.locked = False
             mouse.visible = True
             self.cruz.enabled = False
-            self.estado.text = "Partida pausada. Pulsa COMENZAR para continuar."
+            self.estado.text = "Partida pausada. Pulsa CONTINUAR para seguir."
+            self.titulo_menu.text = "PARTIDA PAUSADA"
             self.boton_inicio.text = "CONTINUAR"
             self.boton_inicio.enabled = True
+            self.panel_menu.enabled = True
         elif key == "enter" and not self.activo and not self.terminado:
             self._accion_inicio()
 
