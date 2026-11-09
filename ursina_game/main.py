@@ -33,12 +33,12 @@ def clear_ui():
     ui.clear()
 
 def label(text, y, scale=1.3, parent=menu_root, col=color.white):
-    e = Text(text=text, parent=parent, y=y, origin=(0, 0), scale=scale, color=col)
+    e = Text(text=text, parent=parent, y=y, z=-.1, origin=(0, 0), scale=scale, color=col)
     ui.append(e)
     return e
 
 def button(text, y, action, parent=menu_root, scale=1.2):
-    e = Button(text=text, parent=parent, y=y, scale=(.48, .085),
+    e = Button(text=text, parent=parent, y=y, z=-.1, scale=(.48, .085),
                color=color.rgb(20, 115, 135), highlight_color=color.rgb(35, 165, 175),
                pressed_color=color.rgb(70, 190, 220), text_color=color.white)
     e.text_entity.scale = 1.15
@@ -77,15 +77,16 @@ def show_welcome():
     invoke(show_menu, delay=3.5)
 
 def show_menu():
-    # Destruir la bienvenida una sola vez. No cambiar enabled después de
-    # destroy(): Panda3D ya no tiene un NodePath válido para ese Entity.
-    if welcome_root and welcome_root.enabled:
-        destroy(welcome_root)
+    # Ocultar la bienvenida sin destruir su NodePath: evita errores de Panda3D
+    # y garantiza que ningún texto de esa pantalla quede visible.
+    welcome_root.enabled = False
     menu_root.enabled = True
+    menu_root.position = (0, 0, 0)
+    menu_root.scale = (1, 1, 1)
     state["screen"] = "menu"
     clear_ui()
     # Fondo propio para que el menú no dependa del color por defecto de la ventana.
-    menu_bg = Entity(parent=menu_root, model="quad", z=1,
+    menu_bg = Entity(parent=menu_root, model="quad", z=.2,
                      scale=(2.2, 1.25), color=color.rgb(18, 55, 78))
     ui.append(menu_bg)
     label("LA LLEVA 3D", .38, 2.5, col=color.rgb(80, 190, 255))
