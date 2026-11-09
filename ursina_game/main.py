@@ -38,9 +38,11 @@ def label(text, y, scale=1.3, parent=menu_root, col=color.white):
     return e
 
 def button(text, y, action, parent=menu_root, scale=1.2):
-    e = Button(text=text, parent=parent, y=y, scale=(.34, .065), color=color.rgb(32, 105, 120),
-               highlight_color=color.rgb(50, 150, 150), pressed_color=color.azure)
-    e.text_entity.scale = 1.1
+    e = Button(text=text, parent=parent, y=y, scale=(.48, .085),
+               color=color.rgb(20, 115, 135), highlight_color=color.rgb(35, 165, 175),
+               pressed_color=color.rgb(70, 190, 220), text_color=color.white)
+    e.text_entity.scale = 1.15
+    e.text_entity.color = color.white
     e.on_click = action
     ui.append(e)
     return e
@@ -82,7 +84,11 @@ def show_menu():
     menu_root.enabled = True
     state["screen"] = "menu"
     clear_ui()
-    label("LA LLEVA 3D", .38, 2.5, col=color.azure)
+    # Fondo propio para que el menú no dependa del color por defecto de la ventana.
+    menu_bg = Entity(parent=menu_root, model="quad", z=1,
+                     scale=(2.2, 1.25), color=color.rgb(18, 55, 78))
+    ui.append(menu_bg)
+    label("LA LLEVA 3D", .38, 2.5, col=color.rgb(80, 190, 255))
     label("¡Corre, escapa y atrapa!", .27, 1.1, col=color.yellow)
     button("JUGAR CONTRA LA IA", .10, lambda: show_setup("solo"))
     button("JUGAR CON AMIGOS", -.01, lambda: show_setup("online"))
