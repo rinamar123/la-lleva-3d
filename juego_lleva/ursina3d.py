@@ -22,6 +22,7 @@ except ImportError as exc:  # pragma: no cover - depende del entorno gráfico
         "Después ejecuta: python -m juego_lleva.ursina3d"
     ) from exc
 
+from juego_lleva.core.config import Config
 from juego_lleva.red.simulacion import SimulacionRonda
 from juego_lleva.desktop3d_logic import (
     ANCHO_LOGICO, ALTO_LOGICO, ESCALA_MUNDO,
@@ -108,9 +109,13 @@ class LaLlevaUrsina:
             Entity(model="cube", position=(0, 0.006, z), scale=(12.8, 0.01, 0.012),
                    color=color.rgba(205, 225, 190, 35))
 
-        camera.fov = 88
-        camera.position = (0, ALTURA_OJOS, 0)
-        camera.rotation = (0, 0, 0)
+        # En el menú mostramos el parque desde arriba. Si la cámara inicia
+        # a la altura de los ojos y mirando al horizonte, el terreno queda
+        # debajo del campo visual y parece que la ventana está vacía.
+        # Al comenzar la partida, _sincronizar_camara() cambia a primera persona.
+        camera.fov = 70
+        camera.position = (0, 12, 0)
+        camera.rotation = (90, 0, 0)
 
     def _crear_interfaz(self):
         self.titulo = Text(
@@ -230,6 +235,15 @@ class LaLlevaUrsina:
         self._actualizar_controles_menu()
 
     def _crear_simulacion(self):
+        # La escena 3D y desktop3d_logic usan un campo de 1280x720. La
+        # simulación original usa por defecto 1908x1080 en escritorio; si no
+        # alineamos Config antes de crear los modelos, los límites y obstáculos
+        # quedan fuera del terreno visible. Se ajusta antes de instanciar
+        # jugadores, entorno y servicios para que todos compartan las mismas
+        # dimensiones durante esta partida 3D.
+        Config.ANCHO_PANTALLA = ANCHO_LOGICO
+        Config.ALTO_PANTALLA = ALTO_LOGICO
+
         nombres = {0: "Jugador"}
         nombres.update({i: f"IA {i}" for i in range(1, self.cantidad_ia + 1)})
         self.sim = SimulacionRonda(nombres, duracion_ronda=self.duracion_ronda)
