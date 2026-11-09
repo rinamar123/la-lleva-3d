@@ -38,10 +38,10 @@ def label(text, y, scale=1.3, parent=menu_root, col=color.rgb(20, 45, 65)):
     ui.append(e)
     return e
 
-def button(text, y, action, parent=menu_root, scale=1.2):
-    e = Button(text=text, parent=parent, y=y, z=0, scale=(.62, .095),
-               color=color.rgb(0, 105, 190), highlight_color=color.rgb(0, 145, 220),
-               pressed_color=color.rgb(0, 75, 145))
+def button(text, y, action, parent=menu_root, scale=1.2, x=0, width=.62, height=.095):
+    e = Button(text=text, parent=parent, x=x, y=y, z=-.05, scale=(width, height),
+               color=color.rgb(0, 85, 155), highlight_color=color.rgb(0, 125, 205),
+               pressed_color=color.rgb(0, 55, 115))
     e.text_entity.scale = 1.15
     e.text_entity.color = color.white
     e.text_entity.z = -0.02
@@ -88,9 +88,12 @@ def show_menu():
     menu_root.scale = (1, 1, 1)
     state["screen"] = "menu"
     clear_ui()
-    # El fondo se pinta con window.color: evitamos quads que puedan tapar
-    # los textos o los botones en la interfaz 2D.
-    window.color = color.rgb(18, 55, 78)
+    # Fondo oscuro de alto contraste, aplicado tanto a la ventana como a una
+    # tarjeta 2D situada detrás de los controles.
+    window.color = color.rgb(12, 35, 55)
+    bg = Entity(parent=menu_root, model="quad", position=(0, 0, 1),
+                scale=(2.2, 1.25), color=color.rgb(12, 35, 55))
+    ui.append(bg)
     label("LA LLEVA 3D", .38, 2.5, col=color.rgb(0, 75, 145))
     label("¡Corre, escapa y atrapa!", .27, 1.1, col=color.rgb(180, 95, 0))
     button("JUGAR CONTRA LA IA", .10, lambda: show_setup("solo"))
@@ -103,15 +106,17 @@ def show_setup(mode):
     clear_ui()
     label("CONFIGURAR PARTIDA", .38, 1.8)
     label("Cantidad de rivales IA (1 a 8)", .20, 1.1)
-    count = Text(str(state["bots"]), parent=menu_root, y=.08, origin=(0,0), scale=2)
+    count = Text(str(state["bots"]), parent=menu_root, x=0, y=.075, z=-.1,
+                 origin=(0,0), scale=2, color=color.rgb(15, 35, 55))
     ui.append(count)
     def change(delta):
-        state["bots"] = max(1,min(8,state["bots"]+delta))
+        state["bots"] = max(1, min(8, state["bots"] + delta))
         count.text = str(state["bots"])
-    button("−", .08, lambda: change(-1), scale=.8).x = -.16
-    button("+", .08, lambda: change(1), scale=.8).x = .16
+    # Controles pequeños separados del número para que no se superpongan.
+    button("−", .075, lambda: change(-1), x=-.16, width=.09, height=.075)
+    button("+", .075, lambda: change(1), x=.16, width=.09, height=.075)
     label("Dificultad: FÁCIL / NORMAL / DIFÍCIL", -.04, .85)
-    diff = Text(state["difficulty"].upper(), parent=menu_root, y=-.13, origin=(0,0), scale=1.2, color=color.yellow)
+    diff = Text(state["difficulty"].upper(), parent=menu_root, y=-.13, z=-.1, origin=(0,0), scale=1.2, color=color.rgb(150,75,0))
     ui.append(diff)
     def cycle():
         options=["facil","normal","dificil"]
@@ -119,8 +124,8 @@ def show_setup(mode):
         diff.text=state["difficulty"].upper()
     button("CAMBIAR DIFICULTAD", -.22, cycle, scale=1)
     if mode == "online":
-        label("El modo online con códigos privados aún requiere", -.34, .72, col=color.orange)
-        label("la nueva API de salas en Render. No inicia una falsa partida.", -.40, .62, col=color.orange)
+        label("El modo online con códigos privados aún requiere", -.34, .72, col=color.rgb(150,65,0))
+        label("la nueva API de salas en Render. No inicia una falsa partida.", -.40, .62, col=color.rgb(150,65,0))
         button("VOLVER", -.52, show_menu, scale=1)
     else:
         button("COMENZAR PARTIDA", -.45, start_game)
