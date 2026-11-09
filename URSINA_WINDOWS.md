@@ -1,19 +1,38 @@
-# La Lleva 3D — Ursina para Windows
+# La Lleva 3D — cliente Ursina para Windows
 
-## Preparación
-1. Instala Python 3.10 o 3.11 de 64 bits.
-2. Abre una terminal en la carpeta raíz del repositorio.
-3. Ejecuta:
-   ```powershell
-   py -m venv .venv-ursina
-   .venv-ursina\Scripts\activate
-   pip install -r requirements-ursina.txt
-   python -m ursina_game.main
-   ```
+## Instalación
 
-El cliente Ursina es una aplicación de escritorio Windows. El servidor web existente en Render sigue separado y no se reemplaza por esta aplicación.
+Desde la carpeta raíz del repositorio, abre PowerShell y ejecuta:
 
-## Estado de esta primera entrega
-Incluye bienvenida animada generada con geometría 3D, menú, selección de cantidad de IA y dificultad, parque 3D, cámara en primera persona y ronda local de 180 segundos.
+```powershell
+py -m venv .venv-ursina
+.venv-ursina\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements-ursina.txt
+python -m juego_lleva.ursina3d
+```
 
-El modo multijugador con códigos privados requiere ampliar la API del servidor Render para crear y administrar varias salas. La opción del menú se muestra como próxima integración y todavía no se conecta a la sala web existente. No se debe presentar esta primera entrega como multijugador ya operativo.
+El comando anterior inicia el cliente 3D mantenido, que reutiliza la simulación y las reglas del proyecto original. Por compatibilidad, también se puede iniciar con `python -m ursina_game.main`.
+
+## Controles
+
+- WASD: moverse respecto a la cámara.
+- Mouse: mirar alrededor.
+- ESC: pausar y liberar el mouse.
+- En pausa, pulsa CONTINUAR para volver a la partida.
+
+## Funciones disponibles en el cliente Ursina
+
+- Cámara en primera persona.
+- Min minimapa con jugadores y obstáculos.
+- Configuración de 1 a 8 rivales IA.
+- Dificultad fácil, normal y difícil.
+- Rondas de 180 segundos.
+- Escena de parque 3D con senderos, árboles y bancas.
+- Reutiliza la simulación del proyecto para colisiones, obstáculos, power-ups, transferencia de la lleva y puntuación.
+
+## Multijugador
+
+El cliente Ursina de escritorio es actualmente local contra IA. El multijugador compartido existente sigue disponible en la versión web 3D y utiliza el servidor configurado en Render. La creación y unión de salas privadas desde el cliente Ursina aún requiere conectar una API de salas con códigos; no se debe considerar implementada hasta completar y probar esa integración.
+
+La versión Pygame original y la versión web existente se conservan sin reemplazarlas.
