@@ -8,6 +8,7 @@ visual por una escena 3D con cámara en primera persona.
 from __future__ import annotations
 
 import math
+from ursina.shaders import unlit_shader
 
 try:
     from ursina import (
@@ -62,22 +63,23 @@ class LaLlevaUrsina:
         self.app.run()
 
     def _crear_escena(self):
-        Sky()
+        # Cielo azul visible y materiales sin depender de la intensidad de luz.
+        Sky(color=color.rgb(105, 175, 225))
         self.luz = DirectionalLight()
         self.luz.look_at((1, -2, -1))
-        AmbientLight(color=color.rgba(150, 160, 180, 0.55))
+        AmbientLight(color=color.rgba(190, 195, 205, 0.65))
 
         Entity(
             model="plane", scale=(13.0, 1, 8.0), position=(0, -0.06, 0),
             texture="white_cube", texture_scale=(13, 8),
-            color=color.rgb(54, 112, 74), collider="box",
+            color=color.rgb(48, 135, 72), collider="box", shader=unlit_shader,
         )
         # Detalles de parque alrededor de la zona de juego: senderos, árboles
         # bajos, jardineras y bancas. Se mantienen fuera del área central.
         Entity(model="cube", position=(0, -0.025, 0), scale=(1.15, 0.025, 7.7),
-               color=color.rgb(190, 174, 132))
+               color=color.rgb(218, 190, 130), shader=unlit_shader)
         Entity(model="cube", position=(0, -0.02, 0), scale=(12.8, 0.025, 0.75),
-               color=color.rgb(190, 174, 132))
+               color=color.rgb(218, 190, 130), shader=unlit_shader)
         for tx, tz in [(-5.7, -3.2), (-5.7, 3.2), (5.7, -3.2), (5.7, 3.2)]:
             Entity(model="cylinder", position=(tx, 0.55, tz), scale=(0.28, 1.1, 0.28),
                    color=color.rgb(105, 69, 42), collider="box")
@@ -113,53 +115,53 @@ class LaLlevaUrsina:
     def _crear_interfaz(self):
         self.titulo = Text(
             "LA LLEVA 3D", position=(-0.86, 0.45), scale=1.5,
-            color=color.white, background=True,
+            color=color.rgb(255, 225, 95), background=True,
         )
         self.estado = Text(
             "Pulsa COMENZAR para jugar", position=(-0.86, 0.39),
-            scale=0.85, color=color.azure,
+            scale=0.85, color=color.rgb(255, 255, 255), background=True,
         )
         self.instrucciones = Text(
             "WASD: moverse   |   Mouse: mirar   |   ESC: pausar",
-            position=(-0.86, -0.46), scale=0.75, color=color.white,
+            position=(-0.86, -0.46), scale=0.75, color=color.white, background=True,
         )
         self.cruz = Text("+", origin=(0, 0), scale=1.2, color=color.white)
         self.cruz.enabled = False
         self.panel_mapa = Entity(
             parent=camera.ui, model="quad", position=(0.34, 0.31),
-            scale=(0.28, 0.20), color=color.rgba(8, 16, 25, 220),
+            scale=(0.31, 0.23), color=color.rgba(5, 12, 22, 245),
         )
         self.mapa_borde = Entity(
             parent=self.panel_mapa, model="quad", z=-0.01,
-            scale=(0.97, 0.94), color=color.rgb(95, 125, 135),
+            scale=(0.97, 0.94), color=color.rgb(235, 195, 75),
         )
         self.mapa_campo = Entity(
             parent=self.panel_mapa, model="quad", z=-0.02,
-            scale=(0.94, 0.91), color=color.rgb(48, 91, 65),
+            scale=(0.94, 0.91), color=color.rgb(32, 105, 58),
         )
         self.mapa_titulo = Text(
             "MINIMAPA", parent=self.panel_mapa, position=(-0.42, 0.39),
-            scale=0.75, color=color.white,
+            scale=0.75, color=color.rgb(255, 230, 130), background=True,
         )
         self.minimapa_activo = False
         self.panel_menu = Entity(
             parent=camera.ui, model="quad", position=(0, 0.02, 0.12),
-            scale=(0.72, 0.72), color=color.rgba(8, 20, 32, 238),
+            scale=(0.78, 0.78), color=color.rgba(7, 16, 29, 250),
         )
         self.titulo_menu = Text(
             "CONFIGURA TU PARTIDA", parent=self.panel_menu,
             position=(0, 0.38), origin=(0, 0), scale=1.15,
-            color=color.rgb(255, 220, 120),
+            color=color.rgb(255, 225, 95), background=True,
         )
         self.etiqueta_ia = Text(
             "Rivales controlados por IA", parent=self.panel_menu,
             position=(0, 0.20), origin=(0, 0), scale=0.85,
-            color=color.white,
+            color=color.rgb(245, 248, 255), background=True,
         )
         self.valor_ia = Text(
             str(self.cantidad_ia), parent=self.panel_menu,
             position=(0, 0.04), origin=(0, 0), scale=1.35,
-            color=color.rgb(255, 230, 130),
+            color=color.rgb(255, 235, 100), background=True,
         )
         self.boton_ia_menos = Button(
             text="−", parent=self.panel_menu, scale=(0.16, 0.11),
@@ -175,20 +177,20 @@ class LaLlevaUrsina:
         )
         self.etiqueta_dificultad = Text(
             "Dificultad", parent=self.panel_menu, position=(0, -0.12),
-            origin=(0, 0), scale=0.8, color=color.white,
+            origin=(0, 0), scale=0.8, color=color.white, background=True,
         )
         self.boton_dificultad = Button(
             text=self.dificultad.upper(), parent=self.panel_menu,
             scale=(0.38, 0.09), position=(0, -0.23),
-            color=color.rgb(20, 95, 150),
-            highlight_color=color.rgb(35, 135, 195),
+            color=color.rgb(18, 105, 165),
+            text_color=color.white, highlight_color=color.rgb(35, 145, 205),
             on_click=self._cambiar_dificultad,
         )
         self.boton_inicio = Button(
             text="COMENZAR PARTIDA", parent=self.panel_menu,
             scale=(0.48, 0.105), position=(0, -0.39),
-            color=color.rgb(20, 125, 75),
-            highlight_color=color.rgb(35, 165, 100),
+            color=color.rgb(15, 135, 75),
+            text_color=color.white, highlight_color=color.rgb(30, 175, 100),
             on_click=self._accion_inicio,
         )
         self.panel_menu.enabled = True
@@ -283,21 +285,28 @@ class LaLlevaUrsina:
             # para que no tape la vista en primera persona.
             root.enabled = jugador.id != 0
             color_jugador = color.rgb(*self.sim.config.color_jugador(jugador.id))
-            torso = Entity(parent=root, model="cube", position=(0, 0.88, 0),
-                           scale=(0.43, 0.72, 0.27), color=color_jugador)
-            cabeza = Entity(parent=root, model="sphere", position=(0, 1.48, 0),
-                            scale=(0.34, 0.34, 0.34), color=color.rgb(232, 190, 150))
-            Entity(parent=root, model="cube", position=(0, 1.12, -0.17),
-                   scale=(0.47, 0.13, 0.08), color=color.red)
-            Entity(parent=root, model="cube", position=(-0.13, 0.30, 0),
-                   scale=(0.14, 0.55, 0.16), color=color.rgb(38, 48, 68))
-            Entity(parent=root, model="cube", position=(0.13, 0.30, 0),
-                   scale=(0.14, 0.55, 0.16), color=color.rgb(38, 48, 68))
+            torso = Entity(parent=root, model="cube", position=(0, 0.92, 0),
+                           scale=(0.52, 0.78, 0.34), color=color_jugador,
+                           shader=unlit_shader)
+            cabeza = Entity(parent=root, model="sphere", position=(0, 1.58, 0),
+                            scale=(0.38, 0.38, 0.38), color=color.rgb(244, 190, 145),
+                            shader=unlit_shader)
+            # Solo el jugador que lleva la lleva tendrá una banda roja.
+            banda = Entity(parent=root, model="cube", position=(0, 1.12, -0.19),
+                           scale=(0.56, 0.15, 0.07), color=color.rgb(255, 45, 45),
+                           shader=unlit_shader)
+            banda.enabled = jugador.es_lleva
+            Entity(parent=root, model="cube", position=(-0.15, 0.32, 0),
+                   scale=(0.17, 0.58, 0.19), color=color.rgb(28, 42, 68),
+                   shader=unlit_shader)
+            Entity(parent=root, model="cube", position=(0.15, 0.32, 0),
+                   scale=(0.17, 0.58, 0.19), color=color.rgb(28, 42, 68),
+                   shader=unlit_shader)
             aura = Entity(parent=root, model="sphere", position=(0, 1.75, 0),
                           scale=(0.72, 0.10, 0.72), color=color.rgba(255, 45, 45, 90))
             aura.enabled = False
             self.entidades_jugadores[jugador.id] = {
-                "root": root, "torso": torso, "aura": aura,
+                "root": root, "torso": torso, "aura": aura, "banda": banda,
             }
             marker = Entity(
                 parent=self.panel_mapa, model="circle", scale=(0.085, 0.085),
@@ -383,6 +392,7 @@ class LaLlevaUrsina:
             marker.color = color.red if jugador.es_lleva else color.rgb(
                 *self.sim.config.color_jugador(jugador.id))
             self.entidades_jugadores[jugador.id]["aura"].enabled = jugador.es_lleva
+            self.entidades_jugadores[jugador.id]["banda"].enabled = jugador.es_lleva
 
     def _actualizar_estado(self):
         restante = max(0, int(self.sim.duracion_ronda - self.sim.tiempo_ronda))
