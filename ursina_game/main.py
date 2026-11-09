@@ -9,7 +9,7 @@ import random
 import time
 
 app = Ursina(title="La Lleva 3D - Parque", borderless=False)
-window.color = color.rgb(115, 205, 235)
+window.color = color.rgb(18, 55, 78)
 window.exit_button.visible = False
 window.fps_counter.enabled = True
 
@@ -33,12 +33,12 @@ def clear_ui():
     ui.clear()
 
 def label(text, y, scale=1.3, parent=menu_root, col=color.white):
-    e = Text(text=text, parent=parent, y=y, z=-.1, origin=(0, 0), scale=scale, color=col)
+    e = Text(text=text, parent=parent, y=y, z=-.5, origin=(0, 0), scale=scale, color=col)
     ui.append(e)
     return e
 
 def button(text, y, action, parent=menu_root, scale=1.2):
-    e = Button(text=text, parent=parent, y=y, z=-.1, scale=(.48, .085),
+    e = Button(text=text, parent=parent, y=y, z=-.5, scale=(.48, .085),
                color=color.rgb(20, 115, 135), highlight_color=color.rgb(35, 165, 175),
                pressed_color=color.rgb(70, 190, 220), text_color=color.white)
     e.text_entity.scale = 1.15
@@ -62,17 +62,18 @@ def make_kid(parent, x, y, shirt, phase=0):
 
 def show_welcome():
     state["screen"] = "welcome"
+    window.color = color.rgb(70, 155, 195)
     menu_root.enabled = False
     welcome_root.enabled = True
-    Entity(parent=welcome_root, model="quad", scale=(2,1.15), color=color.rgb(90,190,225), z=1)
-    Entity(parent=welcome_root, model="quad", scale=(2, .55), y=-.3, color=color.rgb(80,170,90), z=.9)
+    Entity(parent=welcome_root, model="quad", scale=(2,1.15), color=color.rgb(90,190,225), z=.5)
+    Entity(parent=welcome_root, model="quad", scale=(2, .55), y=-.3, color=color.rgb(80,170,90), z=.4)
     for x,z in [(-.8,0),(.8,0)]:
         Entity(parent=welcome_root, model="sphere", color=color.rgb(30,130,55), scale=(.25,.45,.2), x=x, y=.15,z=z)
     make_kid(welcome_root,-.42,-.02,color.orange)
     make_kid(welcome_root,.05,.02,color.azure)
     make_kid(welcome_root,.5,-.03,color.magenta)
-    title = Text("¡LA LLEVA!", parent=welcome_root, y=.34, origin=(0,0), scale=3, color=color.white)
-    sub = Text("¡Corre, escapa y diviértete!", parent=welcome_root, y=-.48, origin=(0,0), scale=1.3)
+    title = Text("¡LA LLEVA!", parent=welcome_root, y=.34, z=-.5, origin=(0,0), scale=3, color=color.rgb(20,55,78))
+    sub = Text("¡Corre, escapa y diviértete!", parent=welcome_root, y=-.48, z=-.5, origin=(0,0), scale=1.3, color=color.white)
     welcome_root.animate_scale(1, duration=.4)
     invoke(show_menu, delay=3.5)
 
@@ -85,10 +86,9 @@ def show_menu():
     menu_root.scale = (1, 1, 1)
     state["screen"] = "menu"
     clear_ui()
-    # Fondo propio para que el menú no dependa del color por defecto de la ventana.
-    menu_bg = Entity(parent=menu_root, model="quad", z=.2,
-                     scale=(2.2, 1.25), color=color.rgb(18, 55, 78))
-    ui.append(menu_bg)
+    # El fondo se pinta con window.color: evitamos quads que puedan tapar
+    # los textos o los botones en la interfaz 2D.
+    window.color = color.rgb(18, 55, 78)
     label("LA LLEVA 3D", .38, 2.5, col=color.rgb(80, 190, 255))
     label("¡Corre, escapa y atrapa!", .27, 1.1, col=color.yellow)
     button("JUGAR CONTRA LA IA", .10, lambda: show_setup("solo"))
